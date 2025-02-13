@@ -2,9 +2,11 @@ package main
 
 import (
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/joho/godotenv"
 )
 
 type Request struct {
@@ -16,14 +18,22 @@ type Request struct {
 func main() {
 	app := fiber.New()
 
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	PORT := os.Getenv("PORT")
+	API_PATH := os.Getenv("API_PATH")
+
 	requests := []Request{}
 
-	app.Get("/api/requests", func(c fiber.Ctx) error {
+	app.Get(API_PATH, func(c fiber.Ctx) error {
 		return c.Status(200).JSON(requests)
 	})
 
 	// Create request
-	app.Post("/api/requests", func(c fiber.Ctx) error {
+	app.Post(API_PATH, func(c fiber.Ctx) error {
 		request := &Request{}
 
 		if err := c.Bind().Body(request); err != nil {
@@ -41,7 +51,7 @@ func main() {
 	})
 
 	// Update request
-	app.Patch("/api/requests/:id", func(c fiber.Ctx) error {
+	app.Patch(API_PATH+"/:id", func(c fiber.Ctx) error {
 		id := c.Params("id")
 
 		for idx, request := range requests {
@@ -55,7 +65,7 @@ func main() {
 	})
 
 	// Delete request
-	app.Delete("/api/requests/:id", func(c fiber.Ctx) error {
+	app.Delete(API_PATH+"/:id", func(c fiber.Ctx) error {
 		id := c.Params("id")
 
 		for idx, request := range requests {
@@ -67,5 +77,5 @@ func main() {
 		return c.Status(404).JSON(fiber.Map{"error": "Request not found"})
 	})
 
-	log.Fatal(app.Listen(":8000"))
+	log.Fatal(app.Listen(":" + PORT))
 }
