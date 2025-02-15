@@ -65,9 +65,9 @@ func UpdateUser(c fiber.Ctx) error {
 	}
 
 	_, err := database.DB.
-		Exec(context.Background(), "UPDATE users SET name = $1, email = $2, WHERE id = $3", user.Name, user.Email, id)
+		Exec(context.Background(), "UPDATE users SET name = $1, email = $2 WHERE id = $3", user.Name, user.Email, id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Ошибка обновления пользователя"})
+		return c.Status(500).JSON(fiber.Map{"error": err})
 	}
 
 	return c.JSON(fiber.Map{"message": "Пользователь обновлен"})

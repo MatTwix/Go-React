@@ -1,4 +1,4 @@
 # Go-React
 My go + react first project
 
-test commit
+air setup: sudo echo "alias air='~/.air'" >> ~/.bash_profile
